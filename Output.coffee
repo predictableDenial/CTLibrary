@@ -14,3 +14,4 @@ handleStats: (ins, currBalance, currPrice, currAssets) ->
     warn "============================="
     
     #call once per method, pass in instrument, current account balance, current price, current available assets
+    #example: handleStats(primaryTradingInstrument, currentValue, currentPrice, availableAssets)
