@@ -13,4 +13,4 @@ handleStats: (ins, currBalance, currPrice, currAssets) ->
     debug "Bot: #{Math.round (((@portfolio.positions[ins.base()].amount + (@portfolio.positions[ins.asset()].amount * currPrice)) / storage.startBalance) - 1) * 100}%"
     warn "============================="
     
-    //call once per method, pass in instrument, current account balance, current price, current available assets
+    #call once per method, pass in instrument, current account balance, current price, current available assets
