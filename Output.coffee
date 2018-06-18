@@ -19,7 +19,7 @@ handleStats: (ins, currBalance, currPrice, currAssets, botType) ->
 	else if botType == 'margin'
 	    info "bot type is margin, not finished yet"
 	warn "============================="
-	debug "Day: #{Math.round((storage.timeFollower / 1440) * 10) / 10}"
+	debug "Day: #{Math.round((storage.timeFollower) * 10) / 10}"
 	debug "Start #{ins.base()}: #{storage.startBalance}  |  Current #{ins.base()}: #{currBalance}"
 	debug "Start #{ins.asset()}: #{storage.startAssets}  |  Current #{ins.asset()}: #{currAssets}"
 	info "Total Account Value: #{currBalance + (currAssets * currPrice) + (sellOrdersAmount * currPrice) + (buyOrdersAmount * buyOrdersPrice)}"
