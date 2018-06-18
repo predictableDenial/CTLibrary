@@ -1,18 +1,34 @@
-handleStats: (ins, currBalance, currPrice, currAssets) ->
+handleStats: (ins, currBalance, currPrice, currAssets, botType) ->
 	storage.startBalance ?= currBalance
 	storage.startPrice ?= currPrice
 	storage.startAssets ?= currAssets
+	sellOrdersAmount = 0
+	buyOrdersAmount = 0
 	if storage.timeFollower
 		storage.timeFollower++
 	storage.timeFollower ?= 1
+	if botType == 'trading'
+	    i = 0
+	    while i < trading.getActiveOrders().length
+	        if trading.getActiveOrders()[i].side == 'sell'
+	            sellOrdersAmount += (trading.getActiveOrders()[i].amount)
+	        if trading.getActiveOrders()[i].side == 'buy'
+	            buyOrdersAmount += (trading.getActiveOrders()[i].amount)
+	            buyOrdersPrice = trading.getActiveOrders()[i].price
+	        i++
+	else if botType == 'margin'
+	    info "bot type is margin, not finished yet"
 	warn "============================="
 	debug "Day: #{storage.timeFollower}"
-	debug "Start Balance: #{storage.startBalance}    Current Balance: #{currBalance}"
-	debug "Start Assets: #{storage.startAssets}    Current Assets: #{currAssets}"
-	debug "B&H: #{Math.round ((currPrice / storage.startPrice) - 1) * 100}%"
-	debug "Bot: #{Math.round (((@portfolio.positions[ins.base()].amount + (@portfolio.positions[ins.asset()].amount * currPrice)) / storage.startBalance) - 1) * 100}%"
+	debug "Start #{ins.base()}: #{storage.startBalance}  |  Current #{ins.base()}: #{currBalance}"
+	debug "Start #{ins.asset()}: #{storage.startAssets}  |  Current #{ins.asset()}: #{currAssets}"
+	debug "Total Account Value: #{currBalance + (currAssets * currPrice) + (sellOrdersAmount * currPrice) + (buyOrdersAmount * buyOrdersPrice)}"
+	#debug "Orders Amount: #{totalOrdersAmount}"
+	debug "B&H Performance: #{Math.round((((currPrice / storage.startPrice) - 1) * 100) * 100) / 100}%"
+	debug "Bot Performance: #{Math.round(((((@portfolio.positions[ins.base()].amount + (@portfolio.positions[ins.asset()].amount * currPrice) + (sellOrdersAmount * currPrice) + (buyOrdersAmount * buyOrdersPrice)) / storage.startBalance) - 1) * 100) * 100) / 100}%"
 	warn "============================="
 	
-	#This function will print an output of bot stats to the console, generalized enough for any bot,
-	#call once at the end of handle, pass in instrument, current account balance, current price, current available assets
-	#example: handleStats(primaryTradingInstrument, currentValue, currentPrice, availableAssets)
+	#This function will print an output of bot stats to the console, generalized enough for any bot.
+	#call once at the end of handle, pass in instrument, current account balance, current price, current available assets,
+	#and the type of bot ('trading' or 'margin')
+	#example: handleStats(primaryTradingInstrument, currentValue, currentPrice, availableAssets, 'trading')
