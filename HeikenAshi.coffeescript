@@ -1,0 +1,42 @@
+HeikenAshiCandles: (primaryTradingInstrument, p, p2) ->
+    HAplot = talib.MA
+        startIdx: 0
+        endIdx: primaryTradingInstrument.close.length - 1
+        inReal: primaryTradingInstrument.close
+        optInTimePeriod: 15
+        optInMAType: 1
+    HAplot = _.last HAplot
+    
+    storage.HAopenPrevious ?= primaryTradingInstrument.open[primaryTradingInstrument.open.length - 1]
+    storage.HAclosePrevious ?= primaryTradingInstrument.close[primaryTradingInstrument.close.length - 1]
+    HAopen = (storage.HAopenPrevious + storage.HAclosePrevious) / 2
+    HAclose = (primaryTradingInstrument.high[primaryTradingInstrument.high.length - 1] + primaryTradingInstrument.low[primaryTradingInstrument.low.length - 1] + primaryTradingInstrument.open[primaryTradingInstrument.open.length - 1] + primaryTradingInstrument.close[primaryTradingInstrument.close.length - 1]) / 4
+    HAhigh = primaryTradingInstrument.high[primaryTradingInstrument.high.length - 1]
+    if HAopen > HAhigh
+        HAhigh = HAopen
+    if HAclose > HAhigh
+        HAhigh = HAclose
+    HAlow = primaryTradingInstrument.low[primaryTradingInstrument.low.length - 1]
+    if HAopen < HAlow
+        HAlow = HAopen
+    if HAclose < HAlow
+        HAlow = HAclose
+    if p
+        plotMark "HAhigh": HAhigh
+        plotMark "HAlow": HAlow
+        plotMark "HAopen": HAopen
+        plotMark "HAclose": HAclose
+    
+    if HAclose > HAopen
+        if p2
+            plotMark "bullish": HAplot
+        context.bullishOrBearish = 'bullish'
+    if HAclose < HAopen
+        if p2
+            plotMark "bearish": HAplot
+        context.bullishOrBearish = 'bearish'
+        
+    storage.HAhighPrevious = HAhigh
+    storage.HAlowPrevious = HAlow
+    storage.HAopenPrevious = HAopen
+    storage.HAclosePrevious = HAclose
